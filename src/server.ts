@@ -4,6 +4,9 @@ import fastify from 'fastify'
 import cors from '@fastify/cors'
 import jwt from '@fastify/jwt'
 import { authRoutes } from './routes/auth'
+import { pedidosRoutes } from './routes/pedidos'
+import { produtosRoutes } from './routes/produtos'
+import { fornecedorRoutes } from './routes/fornecedor'
 
 const app = fastify()
 
@@ -18,6 +21,9 @@ app.register(jwt, {
 })
 
 app.register(authRoutes)
+app.register(pedidosRoutes)
+app.register(produtosRoutes)
+app.register(fornecedorRoutes)
 
 app
   .listen({

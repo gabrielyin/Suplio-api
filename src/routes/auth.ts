@@ -28,7 +28,36 @@ export async function authRoutes(app: FastifyInstance) {
         },
       })
 
-      return user
+      const token = app.jwt.sign(
+        {
+          email: user.email,
+        },
+        {
+          sub: user.id,
+          expiresIn: '7 days',
+        },
+      )
+
+      try {
+        await prisma.session.create({
+          data: {
+            userId: user.id,
+            accessToken: token,
+          },
+        })
+      } catch (err) {
+        console.log(err)
+      }
+
+      const expireInMilliseconds = 60 * 60 * 24 * 7
+
+      return reply
+        .status(200)
+        .header(
+          'set-cookie',
+          `token=${token}; Path=/; max-age=${expireInMilliseconds}; HttpOnly`,
+        )
+        .send()
     } catch (error) {
       if (error)
         return reply.status(409).send({ error: 'Unable to create user' })
@@ -65,6 +94,15 @@ export async function authRoutes(app: FastifyInstance) {
           },
         )
 
+        await prisma.session.update({
+          where: {
+            userId: user.id,
+          },
+          data: {
+            accessToken: token,
+          },
+        })
+
         const expireInMilliseconds = 60 * 60 * 24 * 7
 
         return reply
@@ -86,6 +124,16 @@ export async function authRoutes(app: FastifyInstance) {
     await request.jwtVerify()
 
     const token: string = request.headers.authorization!.slice(7)
+
+    const response = await prisma.session.findFirst({
+      where: {
+        accessToken: token,
+      },
+    })
+
+    if (!response) {
+      return reply.status(401).send({ error: 'Unauthorized request' })
+    }
 
     const decodedTokenSchema = z.object({
       email: z.string(),
