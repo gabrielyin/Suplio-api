@@ -4,7 +4,9 @@ import { prisma } from '../lib/prisma'
 
 export async function pedidosRoutes(app: FastifyInstance) {
   app.get('/orders', async (request, reply) => {
-    return reply.send('pedidos')
+    const orders = await prisma.orders.findMany()
+
+    return reply.status(200).send(orders)
   })
 
   app.post('/create-order', async (request, reply) => {

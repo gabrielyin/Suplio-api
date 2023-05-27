@@ -3,6 +3,12 @@ import { z } from 'zod'
 import { prisma } from '../lib/prisma'
 
 export async function fornecedorRoutes(app: FastifyInstance) {
+  app.get('/suppliers', async (request, reply) => {
+    const suppliers = await prisma.suppliers.findMany()
+
+    return reply.status(200).send(suppliers)
+  })
+
   app.post('/add-supplier', async (request, reply) => {
     const bodySchema = z.object({
       cnpj: z.string(),

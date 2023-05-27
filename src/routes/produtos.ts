@@ -3,6 +3,21 @@ import { z } from 'zod'
 import { prisma } from '../lib/prisma'
 
 export async function produtosRoutes(app: FastifyInstance) {
+  app.get('/products', async (request, reply) => {
+    const products = await prisma.products.findMany({
+      include: {
+        supplier: {
+          select: {
+            cnpj: true,
+            rsocial: true,
+          },
+        },
+      },
+    })
+
+    return reply.status(200).send(products)
+  })
+
   app.post('/add-product', async (request, reply) => {
     const bodySchema = z.object({
       sku: z.string(),
