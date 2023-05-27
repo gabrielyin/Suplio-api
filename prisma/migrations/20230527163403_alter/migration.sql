@@ -33,7 +33,6 @@ CREATE TABLE `Products` (
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 
     UNIQUE INDEX `Products_sku_key`(`sku`),
-    UNIQUE INDEX `Products_supplierId_key`(`supplierId`),
     PRIMARY KEY (`sku`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 

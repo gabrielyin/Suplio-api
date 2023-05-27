@@ -53,7 +53,7 @@ model OrderDetails {
 
 model Products {
   sku        String @id @unique
-  supplierId String @unique
+  supplierId String
 
   name        String
   description String
@@ -73,5 +73,5 @@ model Suppliers {
   email    String
   name     String
   address  String
-  Products Products?
+  Products Products[]
 }
